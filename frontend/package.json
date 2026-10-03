@@ -1,0 +1,29 @@
+{
+  "name": "fintrack-frontend",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:mock": "vite --mode mock",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "node --test scripts/recoveryCode.test.ts scripts/gate.test.ts scripts/updates.test.ts scripts/dashboard.test.ts scripts/accounts.test.ts scripts/reportsSpending.test.ts scripts/debt.test.ts scripts/budgetWorkspace.test.ts scripts/reportsOverview.test.ts scripts/reportsHabits.test.ts scripts/recurringCalendar.test.ts scripts/recurringPanels.test.ts scripts/modalBackdrop.test.ts scripts/theme.test.ts scripts/monthPicker.test.ts scripts/helpMarkdown.test.ts scripts/preload.test.ts",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-plaid-link": "^5.0.0",
+    "react-router-dom": "^7.18.4",
+    "recharts": "^2.15.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1"
+  }
+}

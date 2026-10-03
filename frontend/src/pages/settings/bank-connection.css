@@ -1,0 +1,201 @@
+/* Settings → Bank connection (Plaid keys). Colors come from the global tokens plus the
+   few below, each with a light and a dark value. Written for a non-technical reader:
+   instructions stay at the base size or larger, and every control is a real, roomy button. */
+
+:root {
+  --bc-step-bg: var(--accent-soft);
+  --bc-step-ink: var(--accent-ink);
+  --bc-ok-border: oklch(0.84 0.07 152);
+  --bc-bad-border: oklch(0.85 0.07 27);
+  --bc-next-bg: oklch(0.97 0.018 266);
+  --bc-next-border: oklch(0.88 0.05 266);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme])) {
+    --bc-ok-border: oklch(0.4 0.07 155);
+    --bc-bad-border: oklch(0.42 0.08 25);
+    --bc-next-bg: oklch(0.24 0.035 var(--h-accent));
+    --bc-next-border: oklch(0.38 0.07 var(--h-accent));
+  }
+}
+:root:where([data-theme="dark"], [data-theme="warm"]) {
+  --bc-ok-border: oklch(0.4 0.07 155);
+  --bc-bad-border: oklch(0.42 0.08 25);
+  --bc-next-bg: oklch(0.24 0.035 var(--h-accent));
+  --bc-next-border: oklch(0.38 0.07 var(--h-accent));
+}
+
+.bc { scroll-margin-top: var(--s-4); }
+@media (max-width: 860px) {
+  .bc { scroll-margin-top: 72px; } /* clear the sticky top bar */
+}
+.bc h2:focus { outline: none; }
+.bc h2:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-xs); }
+.bc-body { display: grid; gap: var(--s-4); }
+.bc-body > .banner { margin: 0; }
+.bc-lead { margin: 0; color: var(--text); text-wrap: pretty; }
+.bc-note { margin: 0; font-size: var(--fs-base); line-height: 1.5; }
+.bc-note .icon { width: 1rem; height: 1rem; margin-top: 2px; }
+.bc .field-hint,
+.bc .field-error { font-size: var(--fs-sm); }
+.bc .field-label { font-size: var(--fs-base); }
+
+/* Links out to Plaid's dashboard and the "Keep these keys private" note: bank-setup.css */
+/* Step 2: the two keys */
+.bc-keys { display: grid; gap: 0.375rem; margin: var(--s-1) 0; }
+.bc-keys dt { font-weight: 650; color: var(--text); }
+.bc-keys dd { margin: -0.375rem 0 0; color: var(--text-2); line-height: 1.5; }
+.bc-step-body > .bc-private { margin: var(--s-1) 0; }
+.bc-note > span { min-width: 0; }
+
+/* Guided steps */
+.bc-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-4); }
+.bc-step { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: var(--s-3); align-items: start; }
+.bc-step-n {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--bc-step-bg);
+  color: var(--bc-step-ink);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+.bc-step-body { min-width: 0; display: grid; gap: var(--s-1); padding-top: 0.1875rem; }
+.bc-step-body h3 { font-size: var(--fs-md); font-weight: 650; }
+.bc-step-body p { margin: 0; color: var(--text-2); line-height: 1.55; text-wrap: pretty; }
+.bc-step-body > .bc-note { margin-top: var(--s-2); }
+.bc-step-body > .bc-form { margin-top: var(--s-2); }
+
+/* Form */
+.bc-form { display: grid; gap: var(--s-3); min-width: 0; }
+.bc-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-3); }
+.bc-key-input,
+.bc-fields .input { font-family: var(--font-mono); font-size: var(--fs-base); }
+.bc-key-input:disabled { background: var(--surface-2); color: var(--text-2); }
+@media (max-width: 720px) {
+  .bc-fields { grid-template-columns: minmax(0, 1fr); }
+}
+
+.bc-inline-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--warn-border);
+  border-radius: var(--r);
+  background: var(--warn-soft);
+  font-size: var(--fs-base);
+  color: var(--text);
+}
+.bc-inline-note > .icon { flex: none; width: 1rem; height: 1rem; color: var(--warn); }
+.bc-inline-note > span { flex: 1 1 200px; min-width: 0; text-wrap: pretty; }
+.bc-inline-note.is-info { border-color: var(--border); background: var(--surface-2); }
+.bc-inline-note.is-info > .icon { color: var(--accent-ink); }
+
+.bc-advanced summary {
+  padding: 0.25rem 0;
+  font-size: var(--fs-sm);
+  font-weight: 550;
+  color: var(--text-2);
+  cursor: pointer;
+  width: fit-content;
+  border-radius: var(--r-xs);
+}
+.bc-advanced summary:hover { color: var(--text); }
+.bc-advanced summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bc-advanced-body { display: grid; gap: var(--s-2); margin-top: var(--s-2); }
+.bc-env-seg { flex-wrap: wrap; width: fit-content; max-width: 100%; }
+.bc-env-seg button { min-height: 1.875rem; padding: 0.25rem 0.75rem; font-size: var(--fs-sm); }
+
+/* Live check result */
+.bc-check { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--s-2) var(--s-3); font-size: var(--fs-base); line-height: 1.5; color: var(--text-2); min-height: 1.375rem; }
+.bc-check:empty { display: none; }
+.bc-check > .icon { flex: none; width: 1.125rem; height: 1.125rem; margin-top: 2px; }
+.bc-check > span { flex: 1 1 220px; min-width: 0; text-wrap: pretty; }
+.bc-check.is-bad {
+  padding: var(--s-3);
+  border: 1px solid var(--bc-bad-border);
+  border-radius: var(--r);
+  background: var(--neg-soft);
+}
+.bc-check-btn { align-self: center; }
+.bc-again { padding: 0.375rem 2px; margin: -0.375rem 0; } /* bigger target, same line height */
+.bc-check.is-ok { color: var(--text); }
+.bc-check.is-ok > .icon { color: var(--pos); }
+.bc-check.is-ok strong { color: var(--pos); font-weight: 650; }
+.bc-check.is-bad { color: var(--text); }
+.bc-check.is-bad strong { font-weight: 650; }
+.bc-check.is-bad > .icon { color: var(--neg); }
+.bc-check .link-btn { font-size: inherit; }
+.bc-details { margin-top: var(--s-1); }
+.bc-details summary { padding: 2px 0; font-size: var(--fs-sm); color: var(--text-2); cursor: pointer; width: fit-content; border-radius: var(--r-xs); }
+.bc-details summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.bc-save {
+  display: grid;
+  gap: var(--s-3);
+  max-width: 420px;
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  border: 1px solid var(--bc-ok-border);
+  border-radius: var(--r);
+  background: var(--pos-soft);
+}
+.bc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+.bc-actions .btn:not(.btn-lg) { min-height: 2.375rem; padding: 0 var(--s-3); font-size: var(--fs-base); }
+.bc-inline-note .btn,
+.bc-status-action,
+.bc-check-btn { min-height: 2.375rem; font-size: var(--fs-base); }
+
+/* Connected */
+.bc-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--s-2) var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--bc-ok-border);
+  border-radius: var(--r);
+  background: var(--pos-soft);
+}
+.bc-status > .icon { flex: none; width: 1.25rem; height: 1.25rem; margin-top: 1px; color: var(--pos); }
+.bc-status > div { flex: 1 1 220px; min-width: 0; }
+.bc-status p { margin: 0; text-wrap: pretty; }
+.bc-status-title { font-size: var(--fs-md); font-weight: 650; color: var(--text); }
+.bc-status-sub { margin-top: 2px !important; color: var(--text-2); line-height: 1.5; }
+.bc-status-title:focus { outline: none; }
+.bc-status.is-bad { border-color: var(--bc-bad-border); background: var(--neg-soft); }
+.bc-status.is-bad > .icon { color: var(--neg); }
+.bc-status-action { align-self: center; }
+
+.bc-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--bc-next-border);
+  border-radius: var(--r);
+  background: var(--bc-next-bg);
+}
+.bc-next > div { flex: 1 1 240px; min-width: 0; }
+.bc-next h3 { font-size: var(--fs-md); font-weight: 650; }
+.bc-next p { margin: 2px 0 0; color: var(--text-2); line-height: 1.5; text-wrap: pretty; }
+
+.bc-kv { grid-template-columns: max-content minmax(0, 1fr); font-size: var(--fs-base); }
+.bc-kv dd { min-width: 0; overflow-wrap: anywhere; }
+.bc-kv code { font-size: var(--fs-sm); }
+
+/* Remove modal */
+.bc-remove-form { display: grid; gap: var(--s-3); }
+.bc-remove-form > p { margin: 0; line-height: 1.5; text-wrap: pretty; }
+
+@media (max-width: 560px) {
+  .bc-save { max-width: none; padding: var(--s-3); }
+  .bc-save .btn-lg { width: 100%; justify-content: center; }
+  .bc-next .btn { width: 100%; justify-content: center; }
+  .bc-status-action { width: 100%; justify-content: center; }
+}

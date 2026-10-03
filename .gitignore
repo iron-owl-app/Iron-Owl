@@ -1,0 +1,63 @@
+# Secrets & data — never commit
+.env
+.env.*
+!.env.example
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+keyfile.json*
+# Design handoff built from the real budget (category names and amounts): kept local, not committed
+design/budget-assign/
+design/reports/
+design/transactions/
+design/home-today/
+design/budget/
+design/updates/
+design/launcher/
+design/appwin/
+design/recovery/
+design/recurring/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Release builds (tools/release): the .ftupdate files the owner emails
+dist-release/
+# Windows package and setup .exe (tools/release/build_package.ps1, installer/build_installer.ps1)
+dist-package/
+dist-installer/
+# The owner's private greeting for the update email (read by tools/release/build_update.py)
+tools/release/email_greeting.local.txt
+
+# Node
+node_modules/
+frontend/dist/
+*.log
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+design/settings/
+design/goals-investments/
+design/dashboard-v2/
+design/reports-spending/
+design/accounts/
+design/budget-side-panel/
+design/reports-v2/
+design/recurring-v2/
+
+# Agent handoff notes (docs/guide/agent-handoffs.md): local only
+work/
+
+# Public export: the owner's own leak-check words (tools/public/README.md); never commit
+tools/public/denylist.local.txt

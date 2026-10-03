@@ -1,0 +1,300 @@
+/* Reports › Habits (Release 3.14, reports-v2 design Screen 2): Habits worth trying, the spending
+   calendar, by day of the week, small purchases and subscriptions. Shared colors are the --rp-*
+   tokens in reports.css; the extras only this tab uses are below, light then dark. Nothing under
+   13px, buttons 44px+, type in rem so Settings › Text size scales it. */
+
+:root {
+  /* Idea cards: the number chip and the one solid button, in the card's own hue (--h). */
+  --rph-chip-lc: 0.9 0.06;
+  --rph-chip-ink-lc: 0.4 0.1;
+  --rph-btn-lc: 0.76 0.12;
+  --rph-btn-ink-lc: 0.2 0.04;
+  /* Calendar: fill from light (little spent) to strong (a lot), on the accent hue. */
+  --rph-cal-l0: 0.94;
+  --rph-cal-dl: -0.26;
+  --rph-cal-c0: 0.03;
+  --rph-cal-dc: 0.1;
+  --rph-cal-ink: var(--text);
+  /* Day numbers on the strongest fills (60%+): full text color for contrast. */
+  --rph-cal-n-strong: var(--text);
+  --rph-nospend: oklch(0.9 0.07 155);
+  --rph-nospend-ink: oklch(0.36 0.09 155);
+  /* Weekday bars that are neither the biggest nor the lightest. */
+  --rph-bar: oklch(0.7 0.09 var(--h-accent));
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme])) {
+    --rph-chip-lc: 0.34 0.08;
+    --rph-chip-ink-lc: 0.9 0.08;
+    --rph-btn-lc: 0.78 0.11;
+    --rph-btn-ink-lc: 0.2 0.04;
+    --rph-cal-l0: 0.26;
+    --rph-cal-dl: 0.18;
+    --rph-cal-c0: 0.04;
+    --rph-cal-dc: 0.08;
+    --rph-cal-ink: oklch(0.945 0.006 var(--h-neutral));
+    --rph-cal-n-strong: oklch(0.9 0.012 var(--h-neutral));
+    --rph-nospend: oklch(0.3 0.07 155);
+    --rph-nospend-ink: oklch(0.92 0.05 155);
+    --rph-bar: oklch(0.6 0.09 var(--h-accent));
+  }
+}
+:root:where([data-theme="dark"], [data-theme="warm"]) {
+  --rph-chip-lc: 0.34 0.08;
+  --rph-chip-ink-lc: 0.9 0.08;
+  --rph-btn-lc: 0.78 0.11;
+  --rph-btn-ink-lc: 0.2 0.04;
+  --rph-cal-l0: 0.26;
+  --rph-cal-dl: 0.18;
+  --rph-cal-c0: 0.04;
+  --rph-cal-dc: 0.08;
+  --rph-cal-ink: oklch(0.945 0.006 var(--h-neutral));
+  --rph-cal-n-strong: oklch(0.9 0.012 var(--h-neutral));
+  --rph-nospend: oklch(0.3 0.07 155);
+  --rph-nospend-ink: oklch(0.92 0.05 155);
+  --rph-bar: oklch(0.6 0.09 var(--h-accent));
+}
+
+.rph-tab { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+
+.rph-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.125rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.rph-h2 { margin: 0; font-size: 1.125rem; font-weight: 650; line-height: 1.3; }
+.rph-sub { margin: 0.125rem 0 0; font-size: 0.875rem; color: var(--rp-muted); text-wrap: pretty; }
+.rph-none { margin: 0; font-size: 0.9375rem; color: var(--rp-muted); }
+.rph-muted { color: var(--rp-muted); font-weight: 400; }
+.rph-inline-link { color: var(--accent-ink); font-weight: 650; text-underline-offset: 3px; }
+
+.rph-tag {
+  flex: none;
+  display: inline-block;
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.rph-tag.is-up { background: var(--rp-tag-up-bg); color: var(--rp-tag-up-fg); }
+.rph-tag.is-down { background: var(--rp-tag-down-bg); color: var(--rp-tag-down-fg); }
+
+/* ------------------------------------------------ Habits worth trying */
+
+.rph-ideas { display: flex; flex-direction: column; gap: 0.625rem; min-width: 0; }
+.rph-idea-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 0.75rem;
+}
+.rph-idea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 1rem 1.125rem;
+  border: 1px solid oklch(var(--rp-tint-border-lc) var(--h));
+  border-radius: 16px;
+  background: oklch(var(--rp-tint-bg-lc) var(--h));
+}
+.rph-idea-n {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  background: oklch(var(--rph-chip-lc) var(--h));
+  color: oklch(var(--rph-chip-ink-lc) var(--h));
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+.rph-idea-title { margin: 0; font-size: 1.0625rem; font-weight: 650; line-height: 1.35; text-wrap: pretty; }
+.rph-idea-body { margin: 0; font-size: 0.875rem; color: oklch(var(--rp-tint-ink-lc) var(--h)); text-wrap: pretty; }
+.rph-idea-btn {
+  align-self: flex-start;
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 10px;
+  background: oklch(var(--rph-btn-lc) var(--h));
+  color: oklch(var(--rph-btn-ink-lc) var(--h));
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.rph-idea-btn:hover:not(:disabled) { filter: brightness(1.06); }
+.rph-idea-btn:disabled { cursor: default; opacity: 0.75; }
+.rph-idea-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ------------------------------------------------ calendar | (weekday + small purchases) */
+
+.rph-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
+.rph-col { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+@media (min-width: 1100px) {
+  .rph-split { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+}
+
+.rph-cal-card { scroll-margin-top: 4.5rem; }
+.rph-cal {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+.rph-cal-dow {
+  margin-top: 0.75rem;
+  margin-bottom: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  text-align: center;
+  color: var(--rp-faint);
+}
+.rph-day {
+  --lv: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-width: 0;
+  min-height: 3.625rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: oklch(
+    calc(var(--rph-cal-l0) + var(--rph-cal-dl) * var(--lv)) calc(var(--rph-cal-c0) + var(--rph-cal-dc) * var(--lv)) var(--h-accent)
+  );
+  color: var(--rph-cal-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.rph-day-n { font-size: 0.8125rem; font-weight: 600; color: var(--rp-muted); }
+.rph-day-amt { max-width: 100%; font-size: 0.8125rem; font-weight: 650; line-height: 1.25; white-space: nowrap; overflow: hidden; }
+.rph-day-amt.is-short { display: none; }
+.rph-day-dot { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 999px; background: currentColor; }
+.rph-day.is-strong .rph-day-n { color: var(--rph-cal-n-strong); }
+button.rph-day:hover:not(:disabled) { filter: brightness(1.08); }
+.rph-day.is-nospend { background: var(--rph-nospend); color: var(--rph-nospend-ink); }
+.rph-day.is-nospend .rph-day-n { color: inherit; }
+.rph-day.is-today { background: var(--rp-inset); border-color: var(--border-strong); }
+.rph-day[aria-pressed='true'] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.rph-day.is-blank { visibility: hidden; }
+.rph-day.is-future {
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  cursor: default;
+}
+.rph-day.is-future .rph-day-n { color: var(--rp-faint); }
+
+.rph-cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--rp-muted);
+}
+.rph-cal-legend span { display: inline-flex; align-items: center; gap: 0.375rem; }
+.rph-sw {
+  --lv: 0;
+  display: inline-block;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 4px;
+  background: oklch(
+    calc(var(--rph-cal-l0) + var(--rph-cal-dl) * var(--lv)) calc(var(--rph-cal-c0) + var(--rph-cal-dc) * var(--lv)) var(--h-accent)
+  );
+}
+.rph-sw.is-nospend { background: var(--rph-nospend); }
+.rph-status {
+  margin: 0.625rem 0 0;
+  padding: 0.625rem 0.75rem;
+  border-radius: 10px;
+  background: var(--rp-inset);
+  font-size: 0.875rem;
+}
+
+/* ------------------------------------------------ by day of the week */
+
+.rph-wk {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.rph-wk-col { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; min-width: 0; }
+.rph-wk-val { font-size: 0.8125rem; font-weight: 650; color: var(--rp-muted); }
+.rph-wk-track { display: flex; align-items: flex-end; justify-content: center; width: 100%; height: 6rem; }
+.rph-wk-bar { display: block; width: 70%; border-radius: 6px 6px 0 0; background: var(--rph-bar); }
+.rph-wk-col.is-max .rph-wk-bar { background: var(--rp-out); }
+.rph-wk-col.is-min .rph-wk-bar { background: var(--rp-in); }
+.rph-wk-day { font-size: 0.8125rem; font-weight: 500; }
+.rph-wk-col.is-max .rph-wk-day,
+.rph-wk-col.is-min .rph-wk-day { font-weight: 700; }
+
+/* ------------------------------------------------ small purchases */
+
+.rph-small-total { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin-top: 0.625rem; }
+.rph-big { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.rph-merch { margin: 0.625rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.625rem; }
+.rph-merch li { display: flex; flex-direction: column; gap: 0.25rem; }
+.rph-merch-line { display: flex; justify-content: space-between; gap: 0.625rem; }
+.rph-merch-name { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.rph-merch-line strong { flex: none; font-weight: 650; }
+.rph-track { display: block; height: 6px; border-radius: 999px; background: var(--rp-track); overflow: hidden; }
+.rph-track > span { display: block; height: 100%; border-radius: inherit; background: var(--rp-amber-bar); }
+
+/* ------------------------------------------------ subscriptions (teal tint) */
+
+.rph-subs {
+  --h: 200;
+  border-color: oklch(var(--rp-tint-border-lc) var(--h));
+  background: oklch(var(--rp-tint-bg-lc) var(--h));
+}
+.rph-subs .rph-sub { color: oklch(var(--rp-tint-ink-lc) var(--h)); }
+.rph-subs-list { margin: 0.5rem 0 0; padding: 0; list-style: none; }
+.rph-subs-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  padding: 0.625rem 0;
+  border-top: 1px solid oklch(var(--rp-tint-border-lc) var(--h));
+}
+.rph-subs-name { flex: 1 1 12.5rem; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; }
+.rph-subs-name strong { font-weight: 650; overflow-wrap: anywhere; }
+.rph-subs-list li > strong { font-weight: 650; }
+.rph-small-note { font-size: 0.8125rem; }
+.rph-subs-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid oklch(var(--rp-tint-border-lc) var(--h));
+}
+
+@media (max-width: 560px) {
+  .rph-card { padding: 1rem; }
+  .rph-cal { gap: 0.25rem; }
+  .rph-day { padding: 0.25rem 0.1875rem; }
+  .rph-day-amt.is-full { display: none; }
+  .rph-day-amt.is-short { display: block; letter-spacing: -0.02em; }
+}
+/* Very narrow phones: the calendar keeps 7 columns and shows the day number only. */
+@media (max-width: 359px) {
+  .rph-day-amt.is-short { display: none; }
+  .rph-day { min-height: 2.75rem; }
+}

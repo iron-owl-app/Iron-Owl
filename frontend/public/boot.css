@@ -1,0 +1,172 @@
+/*
+ * The "Starting FinTrack…" screen (design D4 state 1). It is plain markup inside <div id="root">
+ * in index.html, so it shows before any script runs; React replaces it. The app's
+ * StartingScreen reuses these classes so the hand-over doesn't flicker.
+ *
+ * Self-contained on purpose: if the app's own files are missing, this is all that loads, and
+ * after 20 seconds the last line tells the user what to do (pure CSS, no script: CSP-safe).
+ * Colors mirror the app's --bg / --text / --accent tokens (styles.css) in light, dark and
+ * Warm night; public/theme-boot.js sets <html data-theme> first (see lib/themeCore.ts).
+ */
+html {
+  background-color: #f7f6f2;
+}
+@media (prefers-color-scheme: dark) {
+  html:where(:not([data-theme])) {
+    background-color: #0b0e14;
+  }
+}
+html:where([data-theme="dark"], [data-theme="warm"]) {
+  background-color: #0b0e14;
+}
+/* Warm night (styles.css): its --bg. The theme is set by /theme-boot.js before this paints. */
+html:where([data-theme="warm"]) {
+  background-color: #140e09;
+}
+
+.ft-boot {
+  --boot-bg: oklch(0.972 0.005 85);
+  --boot-text: oklch(0.22 0.018 265);
+  --boot-text-2: oklch(0.42 0.016 265);
+  --boot-text-3: oklch(0.51 0.014 265);
+  --boot-accent: oklch(0.46 0.17 266);
+  --boot-accent-fg: oklch(0.99 0.005 266);
+  --boot-track: oklch(0.905 0.007 85);
+  --boot-note-bg: oklch(0.935 0.007 85);
+  --boot-note-border: oklch(0.83 0.009 85);
+
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  text-align: center;
+  background: var(--boot-bg);
+  color: var(--boot-text);
+  font-family: ui-sans-serif, "Inter var", Inter, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-color-scheme: dark) {
+  :where(:root:not([data-theme])) .ft-boot {
+    --boot-bg: oklch(0.165 0.012 262);
+    --boot-text: oklch(0.945 0.006 262);
+    --boot-text-2: oklch(0.8 0.012 262);
+    --boot-text-3: oklch(0.68 0.014 262);
+    --boot-accent: oklch(0.72 0.13 268);
+    --boot-accent-fg: oklch(0.2 0.03 268);
+    --boot-track: oklch(0.285 0.014 262);
+    --boot-note-bg: oklch(0.235 0.014 262);
+    --boot-note-border: oklch(0.37 0.016 262);
+  }
+}
+:where(:root[data-theme="dark"], :root[data-theme="warm"]) .ft-boot {
+  --boot-bg: oklch(0.165 0.012 262);
+  --boot-text: oklch(0.945 0.006 262);
+  --boot-text-2: oklch(0.8 0.012 262);
+  --boot-text-3: oklch(0.68 0.014 262);
+  --boot-accent: oklch(0.72 0.13 268);
+  --boot-accent-fg: oklch(0.2 0.03 268);
+  --boot-track: oklch(0.285 0.014 262);
+  --boot-note-bg: oklch(0.235 0.014 262);
+  --boot-note-border: oklch(0.37 0.016 262);
+}
+:where(:root[data-theme="warm"]) .ft-boot {
+  --boot-bg: oklch(0.17 0.014 60);
+  --boot-text: oklch(0.9 0.03 75);
+  --boot-text-2: oklch(0.79 0.03 70);
+  --boot-text-3: oklch(0.71 0.03 65);
+  --boot-accent: oklch(0.74 0.1 55);
+  --boot-accent-fg: oklch(0.2 0.03 50);
+  --boot-track: oklch(0.3 0.018 60);
+  --boot-note-bg: oklch(0.245 0.018 60);
+  --boot-note-border: oklch(0.52 0.022 60);
+}
+
+.ft-boot-logo {
+  display: block;
+  width: 84px;
+  height: 84px;
+}
+.ft-boot-name {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.ft-boot-msg {
+  margin: 4px 0 0;
+  font-size: 1.0625rem;
+  color: var(--boot-text-2);
+}
+
+/* 240×6 track with a segment sliding across it, endlessly (1.4s). */
+.ft-boot-bar {
+  position: relative;
+  width: 240px;
+  max-width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--boot-track);
+  overflow: hidden;
+}
+.ft-boot-bar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  border-radius: 999px;
+  background: var(--boot-accent);
+  animation: ft-boot-slide 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes ft-boot-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+/* Reduced motion: a still segment in the middle of the track (not frozen off-screen). */
+@media (prefers-reduced-motion: reduce) {
+  .ft-boot-bar > span {
+    animation: none !important;
+    transform: translateX(75%);
+  }
+}
+
+.ft-boot-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--boot-text-3);
+}
+
+/* After 20 seconds with no app: what to do (hidden until then; no script needed). */
+.ft-boot-late,
+.ft-boot-noscript {
+  max-width: 440px;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--boot-note-border);
+  background: var(--boot-note-bg);
+  color: var(--boot-text);
+  font-size: 1.0625rem;
+  text-wrap: pretty;
+}
+.ft-boot-late {
+  visibility: hidden;
+  animation: ft-boot-late 1ms linear 20s forwards;
+}
+@keyframes ft-boot-late {
+  to {
+    visibility: visible;
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "description": "Recovery sheet check-digit vectors shared by backend/tests/test_recovery.py and frontend/scripts/recoveryCode.test.ts. Each group is 5 data digits plus a Damm check digit over str(group_index) + data, group_index 1-based.",
+  "damm": [
+    { "input": "572", "check": 4 },
+    { "input": "5724", "check": 0 },
+    { "input": "100000", "check": 2 },
+    { "input": "699999", "check": 4 }
+  ],
+  "groups": [
+    { "index": 1, "data": "73915", "group": "739151" },
+    { "index": 2, "data": "20486", "group": "204868" },
+    { "index": 3, "data": "58123", "group": "581233" },
+    { "index": 4, "data": "91640", "group": "916405" },
+    { "index": 5, "data": "36258", "group": "362581" },
+    { "index": 6, "data": "04791", "group": "047913" }
+  ]
+}

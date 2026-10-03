@@ -1,0 +1,11 @@
+fastapi==0.141.1
+uvicorn[standard]==0.54.0
+sqlalchemy==2.1.1
+pydantic==2.13.5
+pydantic-settings==2.15.0
+argon2-cffi==25.1.0
+cryptography==46.0.7
+sqlcipher3-wheels==0.5.7
+plaid-python==44.0.0
+python-dotenv==1.2.3
+python-multipart==0.0.32

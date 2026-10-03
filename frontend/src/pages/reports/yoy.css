@@ -1,0 +1,171 @@
+/* Reports › Year over year (Release 3.14, reports-v2 design Screen 3). Colors are the shared
+   --rp-* tokens in reports.css (tints, tags, --rp-yoy-prev / --rp-yoy-cur). Nothing under 13px,
+   controls 44px+, type in rem so Settings › Text size scales it. */
+
+.ryo-tab,
+.ryo-body { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+
+.ryo-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.625rem 0.875rem; }
+.ryo-note { font-size: 0.875rem; color: var(--rp-muted); }
+
+.ryo-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.125rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.ryo-card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.375rem 1rem; }
+.ryo-h2 { margin: 0; font-size: 1.125rem; font-weight: 650; line-height: 1.3; }
+.ryo-sub { margin: 0.125rem 0 0; font-size: 0.875rem; color: var(--rp-muted); text-wrap: pretty; }
+.ryo-none { margin: 0.625rem 0 0; font-size: 0.875rem; color: var(--rp-muted); }
+.ryo-muted { color: var(--rp-muted); }
+.ryo-strong { font-weight: 650; }
+
+/* ---- summary (teal tint) */
+.ryo-summary {
+  --h: 200;
+  padding: 1.25rem 1.375rem;
+  border: 1px solid oklch(var(--rp-tint-border-lc) var(--h));
+  border-radius: 16px;
+  background: oklch(var(--rp-tint-bg-lc) var(--h));
+}
+.ryo-lead { margin: 0; font-size: 1.375rem; font-weight: 650; line-height: 1.35; letter-spacing: -0.01em; text-wrap: pretty; }
+.ryo-rest { margin: 0.375rem 0 0; font-size: 1.0625rem; line-height: 1.5; color: oklch(var(--rp-tint-ink-lc) var(--h)); text-wrap: pretty; }
+
+/* ---- three stats */
+.ryo-stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.75rem;
+}
+.ryo-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 1rem 1.125rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--rp-inset);
+}
+.ryo-stat.is-tinted { border-color: oklch(var(--rp-tint-border-lc) var(--h)); background: oklch(var(--rp-tint-bg-lc) var(--h)); }
+.ryo-stat dt { font-size: 0.875rem; font-weight: 650; color: var(--rp-muted); }
+.ryo-stat.is-tinted dt { color: oklch(var(--rp-tint-label-lc) var(--h)); }
+.ryo-stat dd { margin: 0; }
+.ryo-stat-v { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.ryo-stat-s { font-size: 0.8125rem; color: var(--rp-muted); }
+
+/* ---- legend and month chart */
+.ryo-legend { display: flex; gap: 0.875rem; font-size: 0.8125rem; color: var(--rp-muted); }
+.ryo-legend span { display: inline-flex; align-items: center; gap: 0.375rem; }
+.ryo-legend i { width: 0.625rem; height: 0.625rem; border-radius: 3px; }
+.ryo-legend .is-prev,
+.ryo-bar.is-prev { background: var(--rp-yoy-prev); }
+.ryo-legend .is-cur,
+.ryo-bar.is-cur { background: var(--rp-yoy-cur); }
+
+.ryo-chart-scroll { margin-top: 0.875rem; overflow-x: auto; overscroll-behavior-x: contain; border-radius: 8px; }
+.ryo-chart-scroll:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ryo-chart { display: grid; gap: 0.5rem; padding-bottom: 0.25rem; }
+.ryo-chart-col { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; min-width: 0; }
+.ryo-chart-pair { display: flex; align-items: flex-end; justify-content: center; gap: 3px; width: 100%; height: 7.5rem; }
+.ryo-bar { display: block; width: min(18px, 42%); border-radius: 5px 5px 0 0; }
+.ryo-chart-m { font-size: 0.8125rem; font-weight: 600; }
+.ryo-chart-d { font-size: 0.8125rem; text-align: center; color: var(--rp-muted); white-space: nowrap; }
+.ryo-chart-d.is-up { color: var(--rp-amber-text); }
+.ryo-chart-d.is-down { color: var(--rp-green-text); }
+
+/* ---- tags */
+.ryo-tag {
+  flex: none;
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.ryo-tag.is-up { background: var(--rp-tag-up-bg); color: var(--rp-tag-up-fg); }
+.ryo-tag.is-down { background: var(--rp-tag-down-bg); color: var(--rp-tag-down-fg); }
+.ryo-tag.is-same { background: var(--rp-tag-same-bg); color: var(--rp-tag-same-fg); }
+
+/* ---- categories | stores */
+.ryo-two {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+  align-items: start;
+  gap: 1rem;
+}
+
+.ryo-cats { margin: 0.5rem 0 0; padding: 0; list-style: none; }
+.ryo-cats li { display: flex; flex-direction: column; gap: 0.375rem; padding: 0.75rem 0; border-top: 1px solid var(--rp-rule); }
+.ryo-cat-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.625rem; }
+.ryo-cat-name { flex: 1 1 8.75rem; min-width: 0; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 650; overflow-wrap: anywhere; }
+.ryo-dot { flex: none; width: 10px; height: 10px; border-radius: 3px; background: oklch(var(--rp-cat-l) var(--rp-cat-c) var(--h)); }
+.ryo-words { font-size: 0.875rem; font-weight: 600; }
+.ryo-cat-bars {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
+}
+.ryo-amt { text-align: right; }
+.ryo-track { display: block; height: 8px; border-radius: 999px; background: var(--rp-track); overflow: hidden; }
+.ryo-track > span { display: block; height: 100%; border-radius: inherit; }
+.ryo-track .is-prev { background: var(--rp-yoy-prev); }
+.ryo-track .is-cat { background: oklch(var(--rp-cat-l) var(--rp-cat-c) var(--h)); }
+
+.ryo-search { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 0.625rem; }
+.ryo-search span { font-size: 0.8125rem; font-weight: 600; color: var(--rp-muted); }
+.ryo-search input {
+  height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--rp-inset);
+  color: inherit;
+  font: inherit;
+  font-size: 1rem;
+}
+.ryo-search input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+.ryo-stores { margin: 0.5rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.375rem; }
+.ryo-stores li { --h: 200; border-radius: 12px; background: var(--rp-inset); }
+.ryo-stores li.is-open { background: oklch(var(--rp-tint-bg-lc) var(--h)); box-shadow: inset 0 0 0 1px oklch(var(--rp-tint-label-lc) var(--h)); }
+.ryo-store {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.75rem;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ryo-store:hover { background: var(--rp-hover); }
+.ryo-stores li.is-open .ryo-store:hover { background: transparent; }
+.ryo-store:focus-visible { outline: 2px solid var(--focus); outline-offset: 0; }
+.ryo-store-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.625rem; width: 100%; }
+.ryo-store-name { flex: 1 1 8.75rem; min-width: 0; overflow-wrap: anywhere; }
+.ryo-store-name strong { font-size: 1rem; font-weight: 650; }
+.ryo-store-name .ryo-muted { font-size: 0.8125rem; }
+.ryo-chev { color: var(--rp-faint); }
+.ryo-store-nums { display: flex; flex-wrap: wrap; gap: 0.125rem 1.125rem; font-size: 0.875rem; }
+.ryo-store-detail { margin: 0; padding: 0 0.75rem 0.75rem; font-size: 0.875rem; text-wrap: pretty; }
+.ryo-more { align-self: flex-start; margin-top: 0.625rem; }
+
+@media (max-width: 560px) {
+  .ryo-card { padding: 1rem; }
+  .ryo-summary { padding: 1rem 1.125rem; }
+  .ryo-lead { font-size: 1.1875rem; }
+  .ryo-chart { gap: 0.25rem; }
+}

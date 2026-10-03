@@ -1,0 +1,71 @@
+/* MonthPicker: ‹ [March 2026 ▾] › with a searchable month list. */
+.mpk { position: relative; display: flex; align-items: center; gap: 0.375rem; }
+.mpk-step,
+.mpk-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.mpk-step { width: 2.75rem; flex: none; }
+.mpk-open { gap: 0.5rem; min-width: 14rem; padding: 0 0.875rem; font-size: 1rem; }
+.mpk-open strong { font-weight: 650; }
+.mpk-step:hover:not(:disabled),
+.mpk-open:hover { background: var(--surface-3); }
+.mpk-step:disabled { opacity: 0.4; cursor: default; }
+.mpk-step .icon { width: 1.125rem; height: 1.125rem; }
+.mpk-caret { width: 1rem; height: 1rem; flex: none; }
+.mpk-open[aria-expanded='true'] .mpk-caret { transform: rotate(180deg); }
+
+.mpk-pop {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: min(20rem, calc(100vw - 2rem));
+  padding: 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-3);
+}
+.mpk-search {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+}
+.mpk-search:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.mpk-list { max-height: 18rem; margin: 0.375rem 0 0; padding: 0; overflow-y: auto; list-style: none; }
+.mpk-opt {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.mpk-opt.is-active { background: var(--surface-3); }
+.mpk-opt.is-picked { font-weight: 650; color: var(--accent-ink); }
+.mpk-none { margin: 0.5rem 0.25rem; font-size: 0.9375rem; color: var(--text-2); }
+
+@media (max-width: 40rem) {
+  .mpk { width: 100%; }
+  .mpk-open { flex: 1; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mpk-caret { transition: none; }
+}

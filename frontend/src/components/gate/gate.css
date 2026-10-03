@@ -1,0 +1,206 @@
+/* ==========================================================================
+   App-window screens (design D4): Sign in / Locked, Iron Owl isn't running,
+   Already open in another window. "Starting" lives in public/boot.css.
+   Tokens reuse the app's (--bg, --surface, --text…) and add a few of their
+   own under .gate, in light and dark. Nothing the user reads is under 13px;
+   buttons are at least 44px tall (the main one 52px).
+   ========================================================================== */
+
+.gate {
+  --gate-icon-neutral-bg: oklch(0.93 0.008 262);
+  --gate-icon-neutral-fg: var(--text-2);
+  --gate-icon-info-bg: var(--accent-soft);
+  --gate-icon-info-fg: var(--accent-ink);
+  --note-warn-bg: var(--warn-soft);
+  --note-warn-border: var(--warn-border);
+  --note-warn-text: oklch(0.38 0.08 70);
+  --field-warn-border: oklch(0.6 0.13 75);
+  --note-neutral-bg: var(--surface-3);
+  --note-neutral-border: var(--border-strong);
+  --note-neutral-text: var(--text);
+  --gate-success: var(--pos);
+
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  background: var(--bg);
+  color: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+  :where(:root:not([data-theme])) .gate {
+    --gate-icon-neutral-bg: oklch(0.3 0.03 var(--h-neutral));
+    --gate-icon-neutral-fg: oklch(0.88 0.01 var(--h-neutral));
+    --gate-icon-info-bg: oklch(0.3 0.05 var(--h-accent));
+    --gate-icon-info-fg: oklch(0.88 0.06 var(--h-accent));
+    --note-warn-bg: oklch(0.235 0.035 var(--h-amber));
+    --note-warn-border: var(--amber-edge, oklch(0.36 0.06 var(--h-amber)));
+    --note-warn-text: oklch(0.92 0.07 var(--h-amber-2));
+    --field-warn-border: oklch(0.8 0.12 var(--h-amber));
+    --note-neutral-bg: oklch(0.235 0.014 var(--h-neutral));
+    --note-neutral-border: var(--border-strong);
+    --note-neutral-text: oklch(0.88 0.01 var(--h-neutral));
+    --gate-success: oklch(0.85 0.1 155);
+  }
+}
+:where(:root[data-theme="dark"], :root[data-theme="warm"]) .gate {
+  --gate-icon-neutral-bg: oklch(0.3 0.03 var(--h-neutral));
+  --gate-icon-neutral-fg: oklch(0.88 0.01 var(--h-neutral));
+  --gate-icon-info-bg: oklch(0.3 0.05 var(--h-accent));
+  --gate-icon-info-fg: oklch(0.88 0.06 var(--h-accent));
+  --note-warn-bg: oklch(0.235 0.035 var(--h-amber));
+  --note-warn-border: var(--amber-edge, oklch(0.36 0.06 var(--h-amber)));
+  --note-warn-text: oklch(0.92 0.07 var(--h-amber-2));
+  --field-warn-border: oklch(0.8 0.12 var(--h-amber));
+  --note-neutral-bg: oklch(0.235 0.014 var(--h-neutral));
+  --note-neutral-border: var(--border-strong);
+  --note-neutral-text: oklch(0.88 0.01 var(--h-neutral));
+  --gate-success: oklch(0.85 0.1 155);
+}
+
+.gate-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-3);
+}
+.gate-w-440 { max-width: 440px; }
+.gate-w-520 { max-width: 520px; gap: 1.125rem; }
+.gate-w-540 { max-width: 540px; gap: 1.125rem; }
+
+/* The 52px FinTrack logo (Sign in, Open here) or a 52px icon circle. */
+.gate-logo { display: block; }
+.gate-logo .brand-mark { width: 3.25rem; height: 3.25rem; }
+.gate-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+}
+.gate-icon svg { width: 1.625rem; height: 1.625rem; }
+.gate-icon.is-neutral { background: var(--gate-icon-neutral-bg); color: var(--gate-icon-neutral-fg); }
+.gate-icon.is-info { background: var(--gate-icon-info-bg); color: var(--gate-icon-info-fg); }
+
+.gate-title {
+  margin: 0;
+  font-size: 1.625rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.gate-title:focus { outline: none; }
+.gate-body {
+  margin: -0.5rem 0 0;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+.gate-w-520 .gate-body,
+.gate-w-540 .gate-body { margin-top: -0.625rem; }
+
+.gate-form { display: flex; flex-direction: column; gap: 1rem; margin: 0.25rem 0 0; }
+.gate .btn.gate-main-btn { min-height: 3.25rem; font-size: 1.0625rem; font-weight: 700; border-radius: 12px; }
+.gate-main-btn[aria-disabled='true'] { opacity: 0.6; cursor: progress; }
+/* "Please wait 29s" must stay readable: a quiet surface instead of a faded accent. */
+.gate .btn.gate-main-btn:disabled,
+.gate .btn.gate-main-btn:disabled:hover {
+  opacity: 1;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
+  box-shadow: none;
+}
+.gate .btn.gate-second-btn {
+  min-height: 3.25rem;
+  padding: 0 1.25rem;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+  border: 1px solid var(--border-strong);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.gate .btn.gate-second-btn:hover { background: var(--surface-3); }
+.gate .gate-link { align-self: center; min-height: 2.75rem; font-size: 1rem; }
+.gate .gate-help-link { display: inline-flex; align-items: center; justify-content: center; margin-top: -0.75rem; }
+
+.gate-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.625rem 0.75rem; }
+.gate-actions .gate-main-btn { padding: 0 1.5rem; }
+
+/* Notes: amber (something to fix) and neutral (a wait, not an error). */
+.gate-note {
+  padding: 0.625rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--note-neutral-border);
+  background: var(--note-neutral-bg);
+  color: var(--note-neutral-text);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.gate-note:focus { outline: none; }
+.gate-note:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.gate-note.is-warn { background: var(--note-warn-bg); border-color: var(--note-warn-border); color: var(--note-warn-text); }
+
+.gate-warn-text { margin: 0; font-size: 0.9375rem; color: var(--note-warn-text); }
+.gate-warn-text:empty,
+.gate-status:empty { display: none; }
+.gate-status { margin: 0; font-size: 0.9375rem; color: var(--text-2); text-wrap: pretty; }
+
+/* The password field inside the gate: amber for the wrong password and Caps Lock. */
+.gate .field-xl .input-xl { background: var(--surface-2); }
+.gate .field-xl .input-xl[aria-invalid='true'] { border-color: var(--field-warn-border); }
+.gate .field-xl .caps-warn,
+.gate .field-xl .field-error {
+  padding: 0.625rem 0.75rem;
+  border-radius: 10px;
+  background: var(--note-warn-bg);
+  border: 1px solid var(--note-warn-border);
+  color: var(--note-warn-text);
+  font-size: 0.9375rem;
+}
+.gate .field-xl .caps-warn .icon { color: currentColor; }
+.gate .field-xl .field-hint { font-size: 0.9375rem; color: var(--text-2); }
+.gate .pw-toggle-xl { border: 1px solid var(--border-strong); }
+
+/* Details: a short code for whoever the user calls. The summary is a 44px target. */
+.gate-details { font-size: 0.875rem; color: var(--text-3); }
+.gate-details > summary {
+  /* list-item keeps the native disclosure triangle and role; 12+20+12 = 44px tall. */
+  display: list-item;
+  width: fit-content;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  padding: 0.75rem 0.5rem 0.75rem 0.25rem;
+  margin-left: -0.25rem;
+  line-height: 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.gate-details > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.gate-details > p { margin: 2px 0 0; font-size: 0.9375rem; color: var(--text-2); text-wrap: pretty; }
+
+@media (max-width: 480px) {
+  .gate { padding: 1.5rem 1rem; align-items: flex-start; }
+  .gate-card { padding: 1.5rem 1.125rem; }
+  .gate-title { font-size: 1.5rem; }
+  .gate-actions > .btn { flex: 1 1 100%; }
+}
+
+@media (forced-colors: active) {
+  .gate-card,
+  .gate-note { border: 1px solid CanvasText; }
+  .gate-icon { border: 1px solid CanvasText; }
+}

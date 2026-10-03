@@ -1,0 +1,369 @@
+/* ==========================================================================
+   Updates (design D5): banner, What's new, a picked file, the install screens
+   and Settings › About and updates. Tokens from MAPPING (dark / light); the
+   rest reuses the app's (--accent, --surface, --text…). Main buttons are
+   48-52px, banner buttons 44px; nothing the user reads is under 14px.
+   ========================================================================== */
+
+:root {
+  --upd-banner-bg: oklch(0.955 0.03 266);
+  --upd-banner-border: oklch(0.86 0.06 266);
+  --upd-banner-text-2: oklch(0.42 0.06 266);
+  --upd-banner-primary-bg: var(--accent);
+  --upd-banner-primary-fg: oklch(0.99 0.005 266);
+  --upd-banner-outline: oklch(0.7 0.09 266);
+  --upd-banner-ghost: oklch(0.4 0.08 266);
+  --upd-dialog-bg: var(--surface);
+  --upd-dialog-border: var(--border);
+  --upd-dialog-shadow: var(--shadow-3);
+  --upd-backdrop: oklch(0.22 0.018 265 / 0.45);
+  --upd-check-bg: var(--accent-soft);
+  --upd-check-fg: var(--accent-ink);
+  --upd-step-done-bg: oklch(0.9 0.06 152);
+  --upd-step-done-fg: oklch(0.42 0.12 152);
+  --upd-step-todo-bg: oklch(0.925 0.006 265);
+  --upd-step-todo-fg: oklch(0.45 0.014 265);
+  --upd-step-todo-label: oklch(0.5 0.014 265);
+  --upd-amber-bg: oklch(0.9 0.08 85);
+  --upd-amber-fg: oklch(0.45 0.1 70);
+  --upd-reject-border: oklch(0.85 0.07 27);
+  --upd-reject-ic-bg: oklch(0.9 0.06 25);
+  --upd-reject-ic: oklch(0.45 0.17 27);
+  --upd-ok-text: oklch(0.45 0.12 152);
+  --upd-ready-text: var(--accent-ink);
+  /* OK in a picked-file dialog: the strongest neutral (ink on paper, paper on ink). */
+  --upd-strong-bg: var(--text);
+  --upd-strong-fg: var(--surface);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme])) {
+    --upd-banner-bg: oklch(0.27 0.06 var(--h-accent));
+    --upd-banner-border: oklch(0.38 0.08 var(--h-accent));
+    --upd-banner-text-2: oklch(0.86 0.03 var(--h-accent));
+    --upd-banner-primary-bg: oklch(0.945 0.006 var(--h-neutral));
+    --upd-banner-primary-fg: oklch(0.2 0.02 var(--h-neutral));
+    --upd-banner-outline: oklch(0.5 0.08 var(--h-accent));
+    --upd-banner-ghost: oklch(0.88 0.03 var(--h-accent));
+    --upd-dialog-bg: oklch(0.225 0.014 var(--h-neutral));
+    --upd-dialog-border: var(--border-strong);
+    --upd-dialog-shadow: 0 24px 60px -12px oklch(0 0 0 / 0.7);
+    --upd-backdrop: rgb(0 0 0 / 0.55);
+    --upd-check-bg: oklch(0.3 0.05 var(--h-accent));
+    --upd-check-fg: oklch(0.88 0.06 var(--h-accent));
+    --upd-step-done-bg: oklch(0.32 0.07 155);
+    --upd-step-done-fg: oklch(0.9 0.1 155);
+    --upd-step-todo-bg: oklch(0.28 0.012 var(--h-neutral));
+    --upd-step-todo-fg: oklch(0.7 0.012 var(--h-neutral));
+    --upd-step-todo-label: oklch(0.62 0.012 var(--h-neutral));
+    --upd-amber-bg: oklch(0.34 0.07 var(--h-amber));
+    --upd-amber-fg: oklch(0.92 0.08 var(--h-amber-2));
+    --upd-reject-border: oklch(0.38 0.08 25);
+    --upd-reject-ic-bg: oklch(0.34 0.09 25);
+    --upd-reject-ic: oklch(0.92 0.06 25);
+    --upd-ok-text: oklch(0.85 0.1 155);
+    --upd-ready-text: oklch(0.85 0.07 var(--h-accent));
+    --upd-strong-bg: oklch(0.945 0.006 var(--h-neutral));
+    --upd-strong-fg: oklch(0.2 0.02 var(--h-neutral));
+  }
+}
+:root:where([data-theme="dark"], [data-theme="warm"]) {
+  --upd-banner-bg: oklch(0.27 0.06 var(--h-accent));
+  --upd-banner-border: oklch(0.38 0.08 var(--h-accent));
+  --upd-banner-text-2: oklch(0.86 0.03 var(--h-accent));
+  --upd-banner-primary-bg: oklch(0.945 0.006 var(--h-neutral));
+  --upd-banner-primary-fg: oklch(0.2 0.02 var(--h-neutral));
+  --upd-banner-outline: oklch(0.5 0.08 var(--h-accent));
+  --upd-banner-ghost: oklch(0.88 0.03 var(--h-accent));
+  --upd-dialog-bg: oklch(0.225 0.014 var(--h-neutral));
+  --upd-dialog-border: var(--border-strong);
+  --upd-dialog-shadow: 0 24px 60px -12px oklch(0 0 0 / 0.7);
+  --upd-backdrop: rgb(0 0 0 / 0.55);
+  --upd-check-bg: oklch(0.3 0.05 var(--h-accent));
+  --upd-check-fg: oklch(0.88 0.06 var(--h-accent));
+  --upd-step-done-bg: oklch(0.32 0.07 155);
+  --upd-step-done-fg: oklch(0.9 0.1 155);
+  --upd-step-todo-bg: oklch(0.28 0.012 var(--h-neutral));
+  --upd-step-todo-fg: oklch(0.7 0.012 var(--h-neutral));
+  --upd-step-todo-label: oklch(0.62 0.012 var(--h-neutral));
+  --upd-amber-bg: oklch(0.34 0.07 var(--h-amber));
+  --upd-amber-fg: oklch(0.92 0.08 var(--h-amber-2));
+  --upd-reject-border: oklch(0.38 0.08 25);
+  --upd-reject-ic-bg: oklch(0.34 0.09 25);
+  --upd-reject-ic: oklch(0.92 0.06 25);
+  --upd-ok-text: oklch(0.85 0.1 155);
+  --upd-ready-text: oklch(0.85 0.07 var(--h-accent));
+  --upd-strong-bg: oklch(0.945 0.006 var(--h-neutral));
+  --upd-strong-fg: oklch(0.2 0.02 var(--h-neutral));
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.upd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.125rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+.upd-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.upd-btn:disabled,
+.upd-btn[aria-disabled='true'],
+.upd-btn.is-disabled { opacity: 0.6; cursor: not-allowed; }
+.upd-btn[aria-disabled='true'] { cursor: progress; }
+.upd-btn-44 { min-height: 2.75rem; font-size: 1rem; }
+.upd-btn-48 { min-height: 3rem; padding: 0 1.25rem; border-radius: 12px; font-size: 1rem; font-weight: 700; }
+.upd-btn-52 { min-height: 3.25rem; padding: 0 1.375rem; border-radius: 12px; font-size: 1.0625rem; font-weight: 700; }
+.upd-btn-wide { padding: 0 1.875rem; }
+
+.upd-btn-primary { background: var(--accent); color: var(--accent-fg); }
+.upd-btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+.upd-btn-outline { border-color: var(--border-strong); color: var(--text); font-weight: 600; }
+.upd-btn-outline:hover:not(:disabled) { background: var(--surface-3); }
+.upd-btn-strong { background: var(--upd-strong-bg); color: var(--upd-strong-fg); }
+.upd-btn-strong:hover { background: color-mix(in oklch, var(--upd-strong-bg) 88%, var(--accent)); }
+.upd-self-start { align-self: flex-start; }
+
+/* ---------------------------------------------------------------- banner (state 1) */
+
+/* First child of <main>: edge to edge by undoing main's padding; scrolls with the page. */
+.upd-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem 1rem;
+  margin: calc(-1 * var(--s-5)) calc(-1 * var(--s-6)) var(--s-5);
+  padding: 0.75rem 1.25rem;
+  background: var(--upd-banner-bg);
+  border-bottom: 1px solid var(--upd-banner-border);
+  color: var(--text);
+}
+.upd-banner-ic {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.upd-banner-ic svg { width: 1.0625rem; height: 1.0625rem; }
+.upd-banner-text { flex: 1 1 260px; min-width: 0; margin: 0; font-size: 1rem; line-height: 1.45; text-wrap: pretty; }
+.upd-banner-text strong { font-weight: 650; }
+.upd-banner-sub { color: var(--upd-banner-text-2); }
+/* The three buttons stay together: the group wraps to its own line before they split up. */
+.upd-banner-actions { flex: none; max-width: 100%; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.upd-banner-primary { background: var(--upd-banner-primary-bg); color: var(--upd-banner-primary-fg); font-weight: 700; }
+.upd-banner-primary:hover { background: color-mix(in oklch, var(--upd-banner-primary-bg) 90%, var(--text)); }
+.upd-banner-outline { padding: 0 1rem; border-color: var(--upd-banner-outline); font-weight: 600; }
+.upd-banner-outline:hover { background: color-mix(in oklch, var(--upd-banner-bg) 80%, var(--upd-banner-outline)); }
+.upd-banner-ghost { padding: 0 0.875rem; color: var(--upd-banner-ghost); font-weight: 600; }
+.upd-banner-ghost:hover { background: color-mix(in oklch, var(--upd-banner-bg) 85%, var(--upd-banner-outline)); }
+
+@media (max-width: 860px) {
+  .upd-banner { margin: calc(-1 * var(--s-4)) calc(-1 * var(--s-4)) var(--s-4); padding: 0.75rem 1rem; }
+}
+@media (max-width: 480px) {
+  .upd-banner-actions { width: 100%; }
+  .upd-banner-actions .upd-btn { flex: 1 1 auto; }
+}
+
+/* ---------------------------------------------------------------- pop-ups (states 2 and 8) */
+
+dialog.upd-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--upd-dialog-border);
+  border-radius: 18px;
+  background: var(--upd-dialog-bg);
+  color: var(--text);
+  box-shadow: var(--upd-dialog-shadow);
+}
+dialog.upd-dialog::backdrop { background: var(--upd-backdrop); }
+dialog.upd-dialog[open] { animation: pop var(--t) var(--ease-out); }
+dialog.upd-check-dialog { width: min(520px, calc(100vw - 32px)); }
+dialog.upd-check-dialog.is-danger { border-color: var(--upd-reject-border); }
+
+.upd-dialog-inner { display: flex; flex-direction: column; gap: 1rem; padding: 1.75rem; }
+.upd-dialog-title { margin: 0; font-size: 1.375rem; font-weight: 650; line-height: 1.25; letter-spacing: -0.01em; text-wrap: balance; }
+.upd-news-title { font-size: 1.5rem; }
+.upd-dialog-body { margin: 0.5rem 0 0; font-size: 1.0625rem; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
+.upd-dialog-note { margin: 0; font-size: 0.9375rem; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
+.upd-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.625rem; }
+
+.upd-news-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.625rem; }
+.upd-news-list li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 1rem; line-height: 1.5; text-wrap: pretty; }
+.upd-check {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--upd-check-bg);
+  color: var(--upd-check-fg);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.upd-info {
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+/* 52px icon circles: red (don't install), amber (didn't install), accent (needs help, a note). */
+.upd-ic52 {
+  display: inline-grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.upd-ic52 svg { width: 1.625rem; height: 1.625rem; }
+.upd-ic52.is-danger { background: var(--upd-reject-ic-bg); color: var(--upd-reject-ic); }
+.upd-ic52.is-amber { background: var(--upd-amber-bg); color: var(--upd-amber-fg); }
+.upd-ic52.is-info { background: var(--upd-check-bg); color: var(--upd-check-fg); }
+
+/* Details: a short code for whoever the user calls. The summary is a 44px target. */
+.upd-details { font-size: 0.875rem; color: var(--text-3); }
+.upd-details > summary {
+  display: list-item;
+  width: fit-content;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  padding: 0.75rem 0.5rem 0.75rem 0.25rem;
+  margin: -0.5rem 0 -0.5rem -0.25rem;
+  line-height: 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.upd-details > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.upd-details > p { margin: 0.625rem 0 0; font-size: 0.9375rem; color: var(--text-2); overflow-wrap: anywhere; text-wrap: pretty; }
+
+@media (max-width: 480px) {
+  .upd-dialog-inner { padding: 1.375rem 1.125rem; }
+  .upd-dialog-actions .upd-btn { flex: 1 1 auto; }
+}
+
+/* ---------------------------------------------------------------- install screens (3, 5, 6) */
+
+.upd-card { gap: 1.125rem; }
+.upd-progress { gap: 1.375rem; }
+.upd-card .gate-title:focus { outline: none; }
+.upd-card-sub { margin: 0.375rem 0 0; font-size: 1rem; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
+.upd-card-body { margin: 0.5rem 0 0; font-size: 1.0625rem; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
+
+.upd-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.875rem; }
+.upd-steps li { display: flex; align-items: center; gap: 0.875rem; font-size: 1.0625rem; font-weight: 500; color: var(--upd-step-todo-label); }
+.upd-steps li.is-current { font-weight: 650; color: var(--text); }
+.upd-steps li.is-done { color: var(--text); }
+.upd-step-mark {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--upd-step-todo-bg);
+  color: var(--upd-step-todo-fg);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: background var(--t), color var(--t);
+}
+.is-current > .upd-step-mark { background: var(--accent); color: var(--accent-fg); }
+.is-done > .upd-step-mark { background: var(--upd-step-done-bg); color: var(--upd-step-done-fg); }
+
+.upd-bar { height: 0.625rem; border-radius: 999px; background: var(--border); overflow: hidden; }
+.upd-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 600ms var(--ease-out);
+}
+.upd-bar.is-indeterminate > span { width: 35%; animation: upd-slide 1.6s ease-in-out infinite; }
+@keyframes upd-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(290%); }
+}
+
+/* ---------------------------------------------------------------- Settings › About and updates (7) */
+
+.upd-about-body { display: flex; flex-direction: column; gap: 1rem; }
+.upd-about-rows {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.625rem 1.5rem;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.upd-about-rows dt { color: var(--text-2); }
+.upd-about-rows dd { margin: 0; }
+.upd-strong { font-weight: 650; }
+.upd-ready-text { color: var(--upd-ready-text); font-weight: 600; }
+.upd-ok-text { color: var(--upd-ok-text); font-weight: 600; }
+.upd-about-text { margin: 0; max-width: 68ch; font-size: 0.9375rem; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
+.upd-about-actions { display: flex; flex-wrap: wrap; gap: 0.625rem; }
+.upd-about-status { margin: -0.375rem 0 0; font-size: 0.9375rem; color: var(--text-2); }
+.upd-about-status:empty { display: none; }
+
+/* The file input lives inside its visible label (the 48px button); the ring follows keyboard focus. */
+.upd-file-label { position: relative; }
+.upd-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+.upd-file-label:has(.upd-file-input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+  .upd-about-actions .upd-btn { flex: 1 1 100%; }
+  .upd-about-rows { gap: 0.5rem 1rem; }
+}
+
+/* ---------------------------------------------------------------- motion, high contrast */
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.upd-dialog[open] { animation: none; }
+  .upd-bar > span { transition: none; }
+  /* No sliding: a calm, half-filled bar says "working". */
+  .upd-bar.is-indeterminate > span { width: 100%; animation: none; opacity: 0.45; }
+}
+@media (forced-colors: active) {
+  .upd-banner { border-bottom: 1px solid CanvasText; }
+  .upd-btn { border: 1px solid ButtonText; }
+  .upd-ic52,
+  .upd-step-mark,
+  .upd-check { border: 1px solid CanvasText; }
+  .upd-bar { border: 1px solid CanvasText; }
+  .upd-bar > span { background: Highlight; }
+}

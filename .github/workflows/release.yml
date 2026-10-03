@@ -1,0 +1,278 @@
+# On a version tag (vX.Y.Z): build the setup .exe and the update file, sign the update file,
+# then make a DRAFT GitHub release with both attached. A maintainer checks it and publishes it
+# by hand; only a published release is offered to installed copies. Public Iron Owl repository only.
+#
+# Three jobs, so the signing key is never on a machine that runs tests, npm or the web build
+# (they run third-party code):
+#   build    no secrets: tests, web build, the UNSIGNED update (build_update.py --unsigned-out),
+#            the package and the setup .exe.
+#   sign     environment "release" (its secrets, its reviewers): a clean checkout of the tag,
+#            only Python and the hash-checked cryptography wheels, then build_update.py
+#            --sign-only. The key file and the passphrase exist only inside the one signing step.
+#   release  contents: write, runs no repository code: makes the draft release.
+#
+# Needs (secrets of the "release" environment, see tools/release/GITHUB_RELEASE.md):
+# IRON_OWL_SIGNING_KEY (the passphrase-protected io- key's .pem text, made with
+# tools/release/keygen.py --key-id io-YYYYa) and IRON_OWL_SIGNING_PASSPHRASE. Its public half must
+# be committed in backend/app/update_keys.py GITHUB_KEYS. Also needs tools/release/python-embed.json
+# sha256, tools/release/requirements-lock.txt and tools/release/build-lock.txt (the pinned build
+# backend that turns the lock's one allowed sdist, plaid-python, into a wheel during the build:
+# make_lock.py install-runtime, called by build_update.py and build_package.ps1).
+#
+# Actions are pinned to full commit SHAs (a tag can be moved; a SHA can't), with the tag in a
+# comment. To update one: look up the new tag's commit, read-only, e.g.
+#   gh api repos/actions/checkout/git/ref/tags/v4.4.0 --jq .object
+# (if "type" is "tag", get its commit with gh api repos/actions/checkout/git/tags/<sha> --jq .object.sha),
+# then replace the SHA and the comment here and in the other workflow.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'iron-owl-app/Iron-Owl'
+    # Inno Setup 6 is preinstalled on GitHub's Windows Server 2022 image.
+    runs-on: windows-2022
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      TAG: ${{ github.ref_name }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Check the tag and the version
+        id: version
+        run: |
+          if ($env:TAG -cnotmatch '^v(\d{1,3}\.\d{1,3}\.\d{1,3})$') { throw "The tag must look like v2.0.0." }
+          $v = $Matches[1]
+          $text = Get-Content -LiteralPath backend\app\version.py -Raw
+          if ($text -notmatch '__version__\s*=\s*"(\d{1,3}\.\d{1,3}\.\d{1,3})"' -or $Matches[1] -ne $v) {
+            throw "Tag $env:TAG doesn't match backend/app/version.py."
+          }
+          git fetch --no-tags --depth=1 origin "+refs/tags/$($env:TAG):refs/tags/$($env:TAG)"
+          if ($LASTEXITCODE -ne 0) { throw "Could not fetch the tag." }
+          "version=$v" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+
+      - name: Install Python packages
+        run: python -m pip install --disable-pip-version-check -r backend/requirements-dev.txt
+
+      - name: Download the embeddable Python
+        id: python
+        run: |
+          $pin = Get-Content -LiteralPath tools\release\python-embed.json -Raw | ConvertFrom-Json
+          if ($pin.sha256 -notmatch '^[0-9a-fA-F]{64}$') { throw "tools/release/python-embed.json has no sha256 yet." }
+          if ($pin.file -notmatch '^python-3\.11\.\d+-embed-amd64\.zip$' -or $pin.url -notmatch '^https://www\.python\.org/ftp/python/') {
+            throw "tools/release/python-embed.json must point at python.org."
+          }
+          $zip = Join-Path $env:RUNNER_TEMP $pin.file
+          Invoke-WebRequest -Uri $pin.url -OutFile $zip -UseBasicParsing
+          "zip=$zip" >> $env:GITHUB_OUTPUT
+          "sha256=$($pin.sha256)" >> $env:GITHUB_OUTPUT
+
+      # No key and no passphrase in this job: tests, npm ci and the web build run here.
+      - name: Build the unsigned update file
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          python tools\release\build_update.py --source github --update-repo $env:GITHUB_REPOSITORY `
+            --tag $env:TAG --version $env:VERSION --kind full --unsigned-out (Join-Path $env:RUNNER_TEMP "unsigned")
+          if ($LASTEXITCODE -ne 0) { throw "build_update.py failed." }
+
+      - name: Build the Windows package
+        env:
+          PYTHON_ZIP: ${{ steps.python.outputs.zip }}
+          PYTHON_ZIP_SHA256: ${{ steps.python.outputs.sha256 }}
+        run: |
+          # The web build from the step above is reused (same commit, checked clean).
+          & tools\release\build_package.ps1 -PythonZip $env:PYTHON_ZIP -PythonZipSha256 $env:PYTHON_ZIP_SHA256 `
+            -BuildPython (Get-Command python).Source -SkipFrontendBuild -RequireLock `
+            -UpdateSource github -UpdateRepo $env:GITHUB_REPOSITORY
+
+      - name: Build the setup .exe
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          & installer\build_installer.ps1 -PackageDir (Join-Path "dist-package" "Iron-Owl-$env:VERSION")
+
+      - name: Collect the setup .exe and the release notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP "installer"
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          Copy-Item "dist-installer\Iron-Owl-Setup-$env:VERSION.exe" $out
+          $notes = python -c "import sys; sys.path.insert(0, 'tools/release'); import build_update as b; n, _ = b.read_release_notes(b.TOOL_REPO_ROOT, sys.argv[1]); print('\n'.join('- ' + x for x in n))" $env:VERSION
+          if ($LASTEXITCODE -ne 0) { throw "Could not read RELEASE_NOTES.md." }
+          $body = @(
+            "## What's new", "", ($notes -join "`n"), "",
+            "## Install on Windows", "",
+            "Download Iron-Owl-Setup-$env:VERSION.exe and open it. Windows may say ""Windows protected your PC"" because the installer isn't signed yet: click More info, then Run anyway.", "",
+            "Already using Iron Owl? It offers this update by itself; you don't need to download anything."
+          ) -join "`n"
+          [System.IO.File]::WriteAllText((Join-Path $out "release-notes.md"), $body + "`n")
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: unsigned-update
+          path: ${{ runner.temp }}/unsigned/
+          if-no-files-found: error
+          retention-days: 1
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: installer
+          path: ${{ runner.temp }}/installer/
+          if-no-files-found: error
+          retention-days: 7
+
+  sign:
+    needs: build
+    if: github.repository == 'iron-owl-app/Iron-Owl'
+    runs-on: windows-2022
+    timeout-minutes: 20
+    # The signing secrets live in this environment (required reviewers, v* tags only).
+    environment: release
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      TAG: ${{ github.ref_name }}
+      VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      # A fresh machine and a clean checkout of the tag: only the repo's own signing code runs.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Fetch the tag
+        run: |
+          if ($env:TAG -cnotmatch '^v\d{1,3}\.\d{1,3}\.\d{1,3}$') { throw "The tag must look like v2.0.0." }
+          git fetch --no-tags --depth=1 origin "+refs/tags/$($env:TAG):refs/tags/$($env:TAG)"
+          if ($LASTEXITCODE -ne 0) { throw "Could not fetch the tag." }
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+
+      # Only cryptography and its two dependencies, as exact wheels with the lock's hashes
+      # (no source builds, no install scripts). No secrets in this step.
+      - name: Install the signing library
+        run: |
+          $reqs = Join-Path $env:RUNNER_TEMP "signing-requirements.txt"
+          python tools\release\make_lock.py subset tools\release\requirements-lock.txt cryptography cffi pycparser |
+            Out-File -LiteralPath $reqs -Encoding ascii
+          if ($LASTEXITCODE -ne 0) { throw "tools/release/requirements-lock.txt has no cryptography." }
+          python -m pip install --disable-pip-version-check --require-hashes --no-deps --only-binary=:all: -r $reqs
+          if ($LASTEXITCODE -ne 0) { throw "Could not install cryptography." }
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: unsigned-update
+          path: ${{ runner.temp }}/unsigned
+
+      # The key file and the passphrase exist only inside this step. Both are taken out of the
+      # environment first, so python (and the git it runs) inherit neither; the passphrase goes
+      # in on standard input, and the key folder is deleted as soon as python exits.
+      - name: Sign the update file
+        env:
+          IRON_OWL_SIGNING_KEY: ${{ secrets.IRON_OWL_SIGNING_KEY }}
+          IRON_OWL_SIGNING_PASSPHRASE: ${{ secrets.IRON_OWL_SIGNING_PASSPHRASE }}
+        run: |
+          $key = $env:IRON_OWL_SIGNING_KEY
+          $pass = $env:IRON_OWL_SIGNING_PASSPHRASE
+          Remove-Item -Path Env:IRON_OWL_SIGNING_KEY, Env:IRON_OWL_SIGNING_PASSPHRASE -ErrorAction SilentlyContinue
+          if (-not $key -or -not $pass) {
+            throw "The IRON_OWL_SIGNING_KEY and IRON_OWL_SIGNING_PASSPHRASE secrets are not set in the release environment."
+          }
+          foreach ($line in ($key -split "`r?`n")) { if ($line.Trim()) { Write-Output "::add-mask::$($line.Trim())" } }
+          Write-Output "::add-mask::$pass"
+          $dir = Join-Path $env:RUNNER_TEMP "signing"
+          try {
+            New-Item -ItemType Directory -Force -Path $dir | Out-Null
+            & icacls.exe $dir /inheritance:r /grant:r "$($env:USERNAME):(OI)(CI)F" /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Could not restrict the key folder." }
+            $pem = Join-Path $dir "github-signing.pem"
+            [System.IO.File]::WriteAllText($pem, $key, (New-Object System.Text.UTF8Encoding($false)))
+            $key = $null
+            $pass | python tools\release\build_update.py --sign-only (Join-Path $env:RUNNER_TEMP "unsigned") `
+              --source github --update-repo $env:GITHUB_REPOSITORY --tag $env:TAG --version $env:VERSION `
+              --key $pem --out (Join-Path $env:RUNNER_TEMP "signed") --passphrase-stdin
+            if ($LASTEXITCODE -ne 0) { throw "Signing failed." }
+          } finally {
+            $pass = $null
+            if (Test-Path -LiteralPath $dir) { Remove-Item -LiteralPath $dir -Recurse -Force }
+          }
+
+      - name: Delete the signing key (backstop)
+        if: always()
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "signing"
+          if (Test-Path -LiteralPath $dir) { Remove-Item -LiteralPath $dir -Recurse -Force }
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: signed-update
+          path: ${{ runner.temp }}/signed/Iron-Owl-${{ needs.build.outputs.version }}.ftupdate
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    needs: [build, sign]
+    if: github.repository == 'iron-owl-app/Iron-Owl'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.ref_name }}
+      VERSION: ${{ needs.build.outputs.version }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: installer
+          path: release
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: signed-update
+          path: release
+
+      - name: Make a draft release
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] || { echo "Bad tag"; exit 1; }
+          (cd release && sha256sum "Iron-Owl-Setup-$VERSION.exe" "Iron-Owl-$VERSION.ftupdate" > SHA256SUMS.txt)
+          gh release create "$TAG" --draft --verify-tag \
+            --title "Iron Owl $VERSION" --notes-file release/release-notes.md \
+            "release/Iron-Owl-Setup-$VERSION.exe" "release/Iron-Owl-$VERSION.ftupdate" release/SHA256SUMS.txt

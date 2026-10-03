@@ -1,0 +1,237 @@
+/* Reports (Release 3.10, "Reports Beginner"): the page shell with its tabs, and the tokens the
+   three tabs share. The designs are dark only; their oklch values map onto the global tokens
+   (the dark ones match), with the extra colors here in a light and a dark version. Written for
+   a non-technical reader: base 15px, nothing under 13px, controls 44px+, cards radius 24.
+   Type and spacing in rem so Settings > Text size scales them. */
+
+:root {
+  --rp-muted: var(--text-2);
+  --rp-faint: var(--text-3);
+  --rp-inset: var(--surface-2);
+  --rp-rule: var(--border);
+  --rp-hover: var(--surface-3);
+  --rp-amber-text: oklch(0.5 0.11 70);
+  --rp-green-text: var(--pos);
+  --rp-amber-bar: oklch(0.78 0.12 78);
+  --rp-green-bar: oklch(0.66 0.13 152);
+  --rp-track: oklch(0.92 0.008 85);
+  /* Category colors: oklch(L C <the category's own hue>). */
+  --rp-cat-l: 0.62;
+  --rp-cat-c: 0.13;
+  --rp-sel-bg: var(--accent-soft);
+  --rp-warn-bg: var(--warn-soft);
+  --rp-warn-border: var(--warn-border);
+  --rp-good-bg: var(--pos-soft);
+  --rp-good-border: oklch(0.84 0.07 152);
+  /* Reports v2 (Release 3.14). Tint recipe for a hue: oklch(var(--rp-tint-bg-lc) var(--h)) etc. */
+  --rp-tint-bg-lc: 0.97 0.025;
+  --rp-tint-border-lc: 0.86 0.06;
+  --rp-tint-label-lc: 0.45 0.11;
+  /* Body text on a tinted card (the summary's second paragraph). */
+  --rp-tint-ink-lc: 0.38 0.06;
+  /* Plan vs. spent rows: a lighter wash of the group's hue. */
+  --rp-row-lc: 0.975 0.018;
+  /* Tag pills: Higher (amber), Lower (green), Same (neutral). */
+  --rp-tag-up-bg: oklch(0.93 0.06 85);
+  --rp-tag-up-fg: oklch(0.42 0.1 70);
+  --rp-tag-down-bg: oklch(0.93 0.05 155);
+  --rp-tag-down-fg: oklch(0.4 0.1 155);
+  --rp-tag-same-bg: oklch(0.93 0.008 262);
+  --rp-tag-same-fg: oklch(0.4 0.015 262);
+  /* Money in and out; Year over year bars. */
+  --rp-in: oklch(0.62 0.13 155);
+  --rp-out: oklch(0.64 0.14 25);
+  --rp-yoy-prev: oklch(0.75 0.03 262);
+  --rp-yoy-cur: oklch(0.6 0.11 200);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme])) {
+    --rp-muted: oklch(0.8 0.012 var(--h-neutral));
+    --rp-faint: oklch(0.76 0.012 var(--h-neutral));
+    --rp-inset: oklch(0.185 0.012 var(--h-neutral));
+    --rp-rule: oklch(0.27 0.013 var(--h-neutral));
+    --rp-hover: oklch(0.21 0.013 var(--h-neutral));
+    --rp-amber-text: oklch(0.86 0.1 var(--h-amber));
+    --rp-green-text: oklch(0.82 0.13 155);
+    --rp-amber-bar: oklch(0.78 0.1 var(--h-amber));
+    --rp-green-bar: oklch(0.76 0.13 155);
+    --rp-track: oklch(0.26 0.013 var(--h-neutral));
+    --rp-cat-l: 0.72;
+    --rp-cat-c: 0.13;
+    --rp-sel-bg: oklch(0.27 0.045 var(--h-accent));
+    --rp-warn-bg: oklch(0.235 0.035 var(--h-amber));
+    --rp-warn-border: var(--amber-edge, oklch(0.36 0.06 var(--h-amber)));
+    --rp-good-bg: oklch(0.23 0.035 155);
+    --rp-good-border: oklch(0.36 0.06 155);
+    --rp-tint-bg-lc: 0.225 0.035;
+    --rp-tint-border-lc: 0.34 0.06;
+    --rp-tint-label-lc: 0.84 0.08;
+    --rp-tint-ink-lc: 0.88 0.02;
+    --rp-row-lc: 0.225 0.03;
+    --rp-tag-up-bg: oklch(0.32 0.07 var(--h-amber));
+    --rp-tag-up-fg: oklch(0.9 0.1 var(--h-amber-2));
+    --rp-tag-down-bg: oklch(0.3 0.07 155);
+    --rp-tag-down-fg: oklch(0.88 0.11 155);
+    --rp-tag-same-bg: oklch(0.3 0.015 var(--h-neutral));
+    --rp-tag-same-fg: oklch(0.86 0.012 var(--h-neutral));
+    --rp-in: oklch(0.74 0.13 155);
+    --rp-out: oklch(0.72 0.12 25);
+    --rp-yoy-prev: oklch(0.55 0.05 var(--h-neutral));
+    --rp-yoy-cur: oklch(0.74 0.12 200);
+  }
+}
+:root:where([data-theme="dark"], [data-theme="warm"]) {
+  --rp-muted: oklch(0.8 0.012 var(--h-neutral));
+  --rp-faint: oklch(0.76 0.012 var(--h-neutral));
+  --rp-inset: oklch(0.185 0.012 var(--h-neutral));
+  --rp-rule: oklch(0.27 0.013 var(--h-neutral));
+  --rp-hover: oklch(0.21 0.013 var(--h-neutral));
+  --rp-amber-text: oklch(0.86 0.1 var(--h-amber));
+  --rp-green-text: oklch(0.82 0.13 155);
+  --rp-amber-bar: oklch(0.78 0.1 var(--h-amber));
+  --rp-green-bar: oklch(0.76 0.13 155);
+  --rp-track: oklch(0.26 0.013 var(--h-neutral));
+  --rp-cat-l: 0.72;
+  --rp-cat-c: 0.13;
+  --rp-sel-bg: oklch(0.27 0.045 var(--h-accent));
+  --rp-warn-bg: oklch(0.235 0.035 var(--h-amber));
+  --rp-warn-border: var(--amber-edge, oklch(0.36 0.06 var(--h-amber)));
+  --rp-good-bg: oklch(0.23 0.035 155);
+  --rp-good-border: oklch(0.36 0.06 155);
+  --rp-tint-bg-lc: 0.225 0.035;
+  --rp-tint-border-lc: 0.34 0.06;
+  --rp-tint-label-lc: 0.84 0.08;
+  --rp-tint-ink-lc: 0.88 0.02;
+  --rp-row-lc: 0.225 0.03;
+  --rp-tag-up-bg: oklch(0.32 0.07 var(--h-amber));
+  --rp-tag-up-fg: oklch(0.9 0.1 var(--h-amber-2));
+  --rp-tag-down-bg: oklch(0.3 0.07 155);
+  --rp-tag-down-fg: oklch(0.88 0.11 155);
+  --rp-tag-same-bg: oklch(0.3 0.015 var(--h-neutral));
+  --rp-tag-same-fg: oklch(0.86 0.012 var(--h-neutral));
+  --rp-in: oklch(0.74 0.13 155);
+  --rp-out: oklch(0.72 0.12 25);
+  --rp-yoy-prev: oklch(0.55 0.05 var(--h-neutral));
+  --rp-yoy-cur: oklch(0.74 0.12 200);
+}
+
+/* The page is as wide as the design (1320px). */
+.main-inner:has(> .rp-shell) { max-width: 82.5rem; }
+
+.rp-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.rp-shell :is(button, a, input, select):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.rp-shell h2,
+.rp-shell h3 { letter-spacing: 0; text-wrap: pretty; }
+.rp-shell p { text-wrap: pretty; }
+.rp-shell .num,
+.rp-num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+/* ---- header */
+.rp-head h1 { margin: 0; font-family: var(--font-num); font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+.rp-head p { margin-top: 0.25rem; font-size: 0.9375rem; color: var(--rp-muted); }
+.rp-head .rp-updated { margin-top: 0.125rem; font-size: 0.875rem; }
+
+/* ---- tab bar: sticky at the top of the page (not on phones, where the top bar is) */
+.rp-tabbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin: 0 -0.5rem;
+  padding: 0 0.5rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.rp-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.rp-tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0 1rem;
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--rp-muted);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+.rp-tab svg { width: 1.125rem; height: 1.125rem; flex: none; }
+.rp-tab:hover { color: var(--text); }
+.rp-tab[aria-selected='true'] { color: var(--text); border-bottom-color: var(--accent); }
+.rp-tab[aria-selected='true'] svg { color: var(--accent); }
+.rp-tab:focus-visible { outline-offset: -2px; }
+.rp-panel { min-width: 0; }
+
+@media (max-width: 860px) {
+  .rp-tabbar { position: static; }
+  .rp-tab { padding: 0 0.75rem; }
+}
+
+/* ---- shared by the tabs */
+.rp-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.375rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+}
+.rp-card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 0.5rem 1rem; }
+.rp-card h2 { margin: 0; font-size: 1.125rem; font-weight: 650; line-height: 1.3; }
+.rp-card-sub { margin: 0.125rem 0 0; font-size: 0.875rem; color: var(--rp-muted); }
+.rp-inset { border-radius: 18px; background: var(--rp-inset); }
+.rp-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+  color: var(--accent-ink);
+  text-underline-offset: 3px;
+}
+.rp-link:hover { color: var(--accent-hover); }
+.rp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  text-decoration: none;
+  cursor: pointer;
+}
+.rp-btn:hover { background: var(--rp-hover); }
+.rp-note { font-size: 0.875rem; color: var(--rp-muted); }
+.rp-warn-text { color: var(--rp-amber-text); }
+.rp-good-text { color: var(--rp-green-text); }
+.rp-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 18px;
+  border: 1px solid var(--rp-warn-border);
+  background: var(--rp-warn-bg);
+}
+.rp-error p { flex: 1 1 16rem; margin: 0; }

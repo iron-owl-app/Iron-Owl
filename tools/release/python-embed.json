@@ -1,0 +1,7 @@
+{
+  "comment": "The official CPython embeddable package the release build bundles. sha256 must be filled in (lowercase hex) from a download checked against python.org's signature; the GitHub release build refuses to run while it is empty.",
+  "file": "python-3.11.9-embed-amd64.zip",
+  "url": "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip",
+  "sha256": "009d6bf7e3b2ddca3d784fa09f90fe54336d5b60f0e0f305c37f400bf83cfd3b",
+  "verified": "OpenPGP signature checked 2026-10-02 against python.org Windows release key 7ED10B6531D7C8E1BC296021FC624643487034E5; MD5 matches python.org."
+}

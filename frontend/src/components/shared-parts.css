@@ -1,0 +1,213 @@
+/* Shared beginner parts (Release 3.10, the Reports designs): PillPicker, MonthStepper and
+   MonthBars. The designs are dark only; each color is a token here with a light and a dark
+   value. Type and spacing in rem so Settings > Text size scales them; nothing under 13px,
+   buttons 44px. */
+
+:root {
+  --bp-green-bar: oklch(0.66 0.13 152);
+  --bp-amber-bar: oklch(0.78 0.12 78);
+  --bp-muted-bar: oklch(0.84 0.01 85);
+  --bp-avg: var(--text);
+  --bp-avg-ink: var(--surface);
+  --bp-pick-ring: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme])) {
+    --bp-green-bar: oklch(0.76 0.13 155);
+    --bp-amber-bar: oklch(0.78 0.1 var(--h-amber));
+    --bp-muted-bar: oklch(0.4 0.014 var(--h-neutral));
+    --bp-avg: oklch(0.945 0.006 var(--h-neutral));
+    --bp-avg-ink: oklch(0.2 0.02 var(--h-neutral));
+    --bp-pick-ring: oklch(0.945 0.006 var(--h-neutral));
+  }
+}
+:root:where([data-theme="dark"], [data-theme="warm"]) {
+  --bp-green-bar: oklch(0.76 0.13 155);
+  --bp-amber-bar: oklch(0.78 0.1 var(--h-amber));
+  --bp-muted-bar: oklch(0.4 0.014 var(--h-neutral));
+  --bp-avg: oklch(0.945 0.006 var(--h-neutral));
+  --bp-avg-ink: oklch(0.2 0.02 var(--h-neutral));
+  --bp-pick-ring: oklch(0.945 0.006 var(--h-neutral));
+}
+
+/* ---- PillPicker: a pill container with 44px buttons, the chosen one in the accent */
+.pill-picker {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  max-width: 100%;
+}
+.pill-picker-btn {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.pill-picker-btn:hover { color: var(--text); background: var(--surface-3); }
+.pill-picker-btn.is-on,
+.pill-picker-btn.is-on:hover { background: var(--accent); color: var(--accent-fg); }
+.pill-picker-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---- MonthStepper: ‹ September 2026 › */
+.month-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.month-stepper-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.month-stepper-btn:hover:not(:disabled) { background: var(--surface-3); }
+.month-stepper-btn:disabled { opacity: 0.35; cursor: default; }
+.month-stepper-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.month-stepper-label {
+  min-width: 9.5rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- MonthBars: "The last 6 months" */
+.mbars { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; container-type: inline-size; }
+.mbars-inset {
+  padding: 0.75rem 0.75rem 0;
+  border-radius: 18px;
+  background: var(--surface-2);
+}
+.mbars-plot {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr));
+  gap: 0.625rem;
+  height: 8.625rem;
+}
+.mbars-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  min-width: 0;
+  height: 100%;
+  padding: 0 6%;
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  cursor: pointer;
+}
+.mbars-col:hover:not(:disabled) { background: color-mix(in oklch, var(--surface-3) 60%, transparent); }
+.mbars-col:disabled { cursor: default; }
+.mbars-col:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.mbars-bar {
+  display: block;
+  border-radius: 8px 8px 0 0;
+  background: var(--accent);
+  opacity: 0.72;
+  transition: height 400ms var(--ease-out), opacity var(--t);
+}
+.mbars-col.is-on .mbars-bar { opacity: 1; box-shadow: inset 0 0 0 2px var(--bp-pick-ring); }
+.mbars-bar.is-under { background: var(--bp-green-bar); }
+.mbars-bar.is-over { background: var(--bp-amber-bar); }
+.mbars-bar.is-partial,
+.mbars-bar.is-none { background: var(--bp-muted-bar); }
+.mbars-bar.is-current {
+  background: color-mix(in oklch, var(--accent) 35%, transparent);
+  border: 1.5px dashed var(--accent);
+  border-bottom: 0;
+}
+.mbars-col.is-on .mbars-bar.is-current { box-shadow: none; border-width: 2px; }
+.mbars-avg {
+  position: absolute;
+  left: -0.25rem;
+  right: -0.25rem;
+  z-index: 1;
+  border-top: 2px dashed var(--bp-avg);
+  pointer-events: none;
+}
+.mbars-avg-tag {
+  position: absolute;
+  right: 0;
+  bottom: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--bp-avg);
+  color: var(--bp-avg-ink);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1.3;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.mbars-labels {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr));
+  gap: 0.625rem;
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text-2);
+}
+.mbars-labels > span { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.mbars-month { font-weight: 500; color: var(--text-2); }
+.mbars-labels .is-on .mbars-month { font-weight: 700; color: var(--text); }
+.mbars-value { font-variant-numeric: tabular-nums; }
+
+/* The amounts list: only when the chart is too narrow for amounts under the bars. */
+.mbars-list { display: none; margin: 0.25rem 0 0; }
+@container (max-width: 30rem) {
+  .mbars-value,
+  .mbars-sub { display: none; }
+  .mbars-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+    gap: 0.25rem 1rem;
+    font-size: 0.875rem;
+  }
+  .mbars-list > div { display: flex; justify-content: space-between; gap: 0.5rem; }
+  .mbars-list dt { color: var(--text-2); }
+  .mbars-list dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .mbars-list dd span { color: var(--text-2); }
+  .mbars-list .is-on dt,
+  .mbars-list .is-on dd { font-weight: 700; color: var(--text); }
+}
+
+@media (max-width: 480px) {
+  .mbars-plot,
+  .mbars-labels { gap: 0.25rem; }
+  .mbars-inset { padding: 0.5rem 0.375rem 0; }
+  .mbars-labels { padding: 0 0.375rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill-picker-btn,
+  .mbars-bar { transition: none; }
+}

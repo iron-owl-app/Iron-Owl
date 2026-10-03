@@ -1,0 +1,66 @@
+/* Help (#/help): HELP.md as one readable column, larger text for an older reader. */
+
+.help-page {
+  max-width: 46rem;
+  margin: 0 auto;
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  color: var(--text);
+}
+
+/* Outside the app frame (locked, setup): a plain page with its own padding. */
+.help-standalone {
+  min-height: 100dvh;
+  padding: var(--s-5) var(--s-4) var(--s-7);
+  background: var(--bg);
+}
+
+.help-back {
+  min-height: 2.75rem;
+  font-size: var(--fs-md);
+  margin-bottom: var(--s-4);
+}
+.help-back.is-bottom { margin: var(--s-6) 0 0; }
+
+/* "Need help? Ask Sam." */
+.help-contact {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-5);
+  padding: var(--s-4) var(--s-5);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in oklch, var(--accent) 25%, transparent);
+  border-radius: var(--r-lg);
+  font-size: var(--fs-lg);
+  line-height: 1.4;
+}
+.help-contact .icon { flex: none; width: 1.75rem; height: 1.75rem; color: var(--accent-ink); }
+.help-contact p { margin: 0; overflow-wrap: anywhere; }
+
+.help-doc > :first-child { margin-top: 0; }
+.help-h1 { font-size: var(--fs-2xl); line-height: 1.25; margin: 0 0 var(--s-4); }
+.help-h2 {
+  font-size: var(--fs-xl);
+  line-height: 1.3;
+  margin: var(--s-6) 0 var(--s-3);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--border);
+}
+.help-h3 { font-size: var(--fs-lg); margin: var(--s-5) 0 var(--s-2); }
+.help-p { margin: 0 0 var(--s-3); }
+
+.help-list { margin: 0 0 var(--s-4); padding-left: 1.75rem; }
+.help-list li { margin: 0 0 var(--s-2); padding-left: var(--s-1); }
+.help-steps > li::marker { font-weight: 700; color: var(--accent-ink); }
+
+.help-link {
+  color: var(--accent-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  /* A bigger, easier target without changing the line height. */
+  padding: 0.35rem 0;
+}
+.help-link:hover { color: var(--accent-hover); }
+.help-ext { width: 0.95em; height: 0.95em; margin-left: 0.2em; vertical-align: -0.1em; }
