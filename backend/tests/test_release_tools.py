@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import sys
 import zipfile
@@ -424,6 +425,11 @@ def test_unexpected_files_fail_the_build(tmp_path, key_file, path, content):
     key, public = key_file
     repo = make_repo(tmp_path / "repo", public)
     w(repo / path, content)
+    target = repo / path
+    if target.name not in os.listdir(target.parent):
+        # Some Windows versions treat reserved device names (CON, NUL...) with an extension as the
+        # device, so no file is created and there is nothing for the build to refuse.
+        pytest.skip(f"this system did not create {target.name} as a file")
     with pytest.raises(bu.BuildError):
         run_build(repo, key)
     assert '__version__ = "1.4.0"' in (repo / "backend/app/version.py").read_text()  # restored
