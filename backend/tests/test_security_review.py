@@ -175,8 +175,12 @@ def _assert_private(path) -> None:
 
     sddl = _sddl(path)
     sids = set(re.findall(r"\(A;[^;]*;[^;]*;;;([^)]+)\)", sddl))
+    me = _my_sid()
+    allowed = {me, "SY", "BA", "S-1-5-18", "S-1-5-32-544"}
+    if me.endswith("-500"):
+        allowed.add("LA")  # SDDL's short form for the built-in Administrator account (CI runners use it)
     # Only this user, SYSTEM and Administrators: no Everyone/Users/Authenticated Users.
-    assert sids and sids <= {_my_sid(), "SY", "BA", "S-1-5-18", "S-1-5-32-544"}, sddl
+    assert sids and sids <= allowed, sddl
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Windows ACLs")
